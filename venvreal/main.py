@@ -33,9 +33,11 @@ website_response = requests.get(site)
 website_response_raw = website_response.text
 soup = BeautifulSoup(website_response_raw, "html.parser")
 song_titles_raw = soup.find_all(name="h3", id="title-of-a-story")
-li_raw = [li.find(name="h3", class_="c-title") for li in soup.find_all(name="li", class_="o-chart-results-list__item")]
+li_raw = [li.find(name="h3", class_="c-title") and li.find(name="span", class_="c-label") for li in soup.find_all(name="li", class_="o-chart-results-list__item")]
 #h3_element = li_raw.find(name="h3", class_="c-title")
-print(li_raw)
+print(len(li_raw))
+for i in li_raw:
+    print(i)
 #print(li_raw)
 h3_list = []
 for h3_title in soup.select("h3#title-of-a-story.c-title"):
@@ -73,6 +75,7 @@ for title in song_titles_raw:
 only_song_titles = h3_list[4:(len(h3_list)-20):1]
 #print(only_song_titles)
 sp.user_playlist_create(user=USERNAME, name=user_date)
+"""
 get_user_playlists = sp.user_playlists(user=USERNAME)
 print(get_user_playlists)
 first_playlist_id = get_user_playlists['items'][0]['id']
@@ -91,3 +94,4 @@ for id, song in enumerate(only_song_titles):
     #print(sp.current_user_top_tracks())
     #sp.user_playlist_add_tracks(user=USERNAME, playlist_id=first_playlist_id, tracks=spotify_song_uri, position=id)
     print(f"Added song title: {song} to the {user_date} playlist. I think...")
+"""
