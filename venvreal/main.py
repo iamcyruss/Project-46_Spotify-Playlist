@@ -53,15 +53,31 @@ li_elements = soup.find_all(name="li", class_="o-chart-results-list__item")
 
 # Iterate over the li elements
 title_text = []
+span_text = []
 for li_element in li_elements:
-  # Find the h3 elements within the li element
-  h3_elements = li_element.find_all(name="h3", id="title-of-a-story")
-  span_elements = li_element.find_all(name="span", class_="c-label")
+    # Find the h3 elements within the li element
+    h3_elements = li_element.find_all(name="h3", id="title-of-a-story")
+    span_elements = li_element.find_all(name="span", class_="c-label")
 
-  # Extract the text from the h3 elements
-  for h3_element in h3_elements:
-    title_text.append(h3_element.getText(strip=True))
-    #print(title_text)
+    #Extract the text from the h3 elements
+    for h3_element in h3_elements:
+        title_text.append(h3_element.getText(strip=True))
+        #print(title_text)
+    for span_element in span_elements:
+        try:
+            if span_element.getText(strip=True) in EXCLUDE_LIST:
+                pass
+            elif int(span_element.getText(strip=True)):
+                pass
+            else:
+                span_text.append(span_element.getText(strip=True))
+        except ValueError as error:
+            span_text.append(span_element.getText(strip=True))
+
+#print(title_text)
+#print(len(title_text))
+#print(span_text)
+#print(len(span_text))
 
 h3_list = []
 for h3_title in soup.select("h3#title-of-a-story.c-title"):
@@ -82,8 +98,8 @@ for span_artist in soup.select("span.c-label"):
     except ValueError as error:
         span_list.append(span_artist.getText(strip=True))
 h3_list_trim = h3_list[2:(len(h3_list)-20):1]
-print(h3_list)
-print(span_list)
+#print(h3_list)
+#print(span_list)
 #song_titles_raw = soup.find_all(name="div", class_="o-chart-results-list-row-container")
 #print(song_titles_raw)
 """
@@ -101,12 +117,15 @@ only_song_titles = h3_list[4:(len(h3_list)-20):1]
 sp.user_playlist_create(user=USERNAME, name=user_date)
 
 get_user_playlists = sp.user_playlists(user=USERNAME)
-print(get_user_playlists)
+#print(get_user_playlists)
 first_playlist_id = get_user_playlists['items'][0]['id']
-print(first_playlist_id)
+#print(first_playlist_id)
+title_artist = []
 
 for id, song in enumerate(title_text):
     spotify_song_uri = []
+    #print(f"Searching for '{song} {span_text[id]}'")
+    title_artist.append(f"{song} {span_text[id]}")
     spotify_song = sp.search(q=song, limit=1, type="track", market="US")
     #print(f"Billboard Song data: {song}")
     #print(f"Spotify Search results: {spotify_song}")
@@ -117,5 +136,5 @@ for id, song in enumerate(title_text):
     #print(f"Spotify Song URI: {spotify_song_uri}")
     #print(sp.current_user_top_tracks())
     sp.user_playlist_add_tracks(user=USERNAME, playlist_id=first_playlist_id, tracks=spotify_song_uri, position=id)
-    print(f"Added song title: {song} to the {user_date} playlist. I think...")
+    print(f"{id+1} Added song: '{song} by {span_text[id]}' to the {user_date} playlist. I think...")
 
