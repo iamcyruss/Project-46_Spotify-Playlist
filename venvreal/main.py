@@ -43,12 +43,26 @@ website_response = requests.get(site)
 website_response_raw = website_response.text
 soup = BeautifulSoup(website_response_raw, "html.parser")
 song_titles_raw = soup.find_all(name="h3", id="title-of-a-story")
-li_raw = [li.find(name="h3", class_="c-title") and li.find(name="span", class_="c-label") for li in soup.find_all(name="li", class_="o-chart-results-list__item")]
+#li_raw = [li.find(name="h3", class_="c-title") and li.find(name="span", class_="c-label") for li in soup.find_all(name="li", class_="o-chart-results-list__item")]
 #h3_element = li_raw.find(name="h3", class_="c-title")
-print(len(li_raw))
-for i in li_raw:
-    print(i)
+#print(len(li_raw))
 #print(li_raw)
+
+# Find the li elements
+li_elements = soup.find_all(name="li", class_="o-chart-results-list__item")
+
+# Iterate over the li elements
+title_text = []
+for li_element in li_elements:
+  # Find the h3 elements within the li element
+  h3_elements = li_element.find_all(name="h3", id="title-of-a-story")
+  span_elements = li_element.find_all(name="span", class_="c-label")
+
+  # Extract the text from the h3 elements
+  for h3_element in h3_elements:
+    title_text.append(h3_element.getText(strip=True))
+    #print(title_text)
+
 h3_list = []
 for h3_title in soup.select("h3#title-of-a-story.c-title"):
     if h3_title.getText(strip=True) in EXCLUDE_LIST:
@@ -85,13 +99,13 @@ for title in song_titles_raw:
 only_song_titles = h3_list[4:(len(h3_list)-20):1]
 #print(only_song_titles)
 sp.user_playlist_create(user=USERNAME, name=user_date)
-"""
+
 get_user_playlists = sp.user_playlists(user=USERNAME)
 print(get_user_playlists)
 first_playlist_id = get_user_playlists['items'][0]['id']
 print(first_playlist_id)
 
-for id, song in enumerate(only_song_titles):
+for id, song in enumerate(title_text):
     spotify_song_uri = []
     spotify_song = sp.search(q=song, limit=1, type="track", market="US")
     #print(f"Billboard Song data: {song}")
@@ -102,6 +116,6 @@ for id, song in enumerate(only_song_titles):
         print(error)
     #print(f"Spotify Song URI: {spotify_song_uri}")
     #print(sp.current_user_top_tracks())
-    #sp.user_playlist_add_tracks(user=USERNAME, playlist_id=first_playlist_id, tracks=spotify_song_uri, position=id)
+    sp.user_playlist_add_tracks(user=USERNAME, playlist_id=first_playlist_id, tracks=spotify_song_uri, position=id)
     print(f"Added song title: {song} to the {user_date} playlist. I think...")
-"""
+
