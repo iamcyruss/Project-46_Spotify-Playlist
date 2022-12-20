@@ -4,6 +4,16 @@ import os
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 #from spotipy.oauth2 import SpotifyClientCredentials
+"""
+12-20-2022|holy fuck this project is rough. I've gotten it all to work but now I'm trying to make the searching 
+of songs more accurate. I noticed if i search for just the song title I might get the right one and I might not.
+I figured searching by the aritist name and title of the song would yield more accurate results but I cant seem to 
+extract what I want from the website without getting a bunch of other shit with it. I'm going to still work on it but I
+might end up just doing it by the title name. 
+I also have an EXCLUDE list that seems to work most of the time... idk. The billboard site though is garbage for its
+class and id tags. like you all couldnt give the title of the song id="title of song" and the artist for that song
+id="artist of song". if it was like that this would be a cake walk.
+"""
 
 
 EXCLUDE_LIST = ['Songwriter(s):', 'Producer(s):', 'Imprint/Promotion Label:', '-', 'NEW', 'RE-\\nENTRY']
